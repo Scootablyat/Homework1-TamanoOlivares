@@ -17,6 +17,7 @@ struct object{ // @Christian this is what I'm using to store object name and pos
     std::string objectName;
     Vector2 objectPos;
     bool isFound = false;
+    Color color;
 };
 
 void movement(int up, int down, int right, int left, float speed, Vector2& circle){
@@ -32,6 +33,10 @@ void movement(int up, int down, int right, int left, float speed, Vector2& circl
     if(IsKeyDown(left)){
         circle.x -= speed*GetFrameTime();
     }
+}
+
+bool IsInSelectionArea(Vector2 point, Vector2 squarePos, float size) {
+    return (point.x >= squarePos.x && point.x <= squarePos.x + size && point.y >= squarePos.y && point.y <= squarePos.y + size);
 }
 
 void parseSettingsFile(std::string &imageName, object &object1, object &object2, object &object3, object &object4, object &object5,
@@ -176,6 +181,7 @@ void parseSettingsFile(std::string &imageName, object &object1, object &object2,
 int main(){
     bool movementEnabled = true;
     float speed = 220;
+    int fontSize = 16;
     Vector2 player = {(WINDOW_WIDTH/2) + 100, (WINDOW_HEIGHT/2) + 100};
     float playerSize = 100;
     Vector2 cameraWindowDimensions;
@@ -187,7 +193,7 @@ int main(){
     object object4;
     object object5;
 
-    std::vector<object> allObjects = {object1, object2, object3, object4, object5};
+    
 
     // camera stuff
     int cam_type;
@@ -199,7 +205,7 @@ int main(){
     Vector2 defaultOffset = {WINDOW_WIDTH/2, WINDOW_HEIGHT/2};
     camera_view.offset = defaultOffset;
     camera_view.zoom = 1.0f;
-    
+    int victoryCounter = 0;
     //////////////////
     InitWindow(800, 600, "Tamano_Olivares - Homework 1");
     parseSettingsFile(imageName, object1, object2, object3, object4, object5, EDGE_X, EDGE_Y, cameraWindowDimensions, cameraDriftSpeed);
@@ -207,7 +213,10 @@ int main(){
     std::cout << "EDGE_Y[0] = " << EDGE_Y[0] << " AND EDGE_Y[1] = " << EDGE_Y[1] << std::endl;
     Image displayedImage = LoadImage("toybox.jpg");
     Texture texture = LoadTextureFromImage(displayedImage);
+    std::vector<object> allObjects = {object1, object2, object3, object4, object5};
+
     while(!WindowShouldClose()){
+        victoryCounter = 0;
         if(movementEnabled){
             movement(KEY_W, KEY_S, KEY_D, KEY_A, speed, player);
         }
@@ -219,8 +228,20 @@ int main(){
             camera_view.zoom = 1.0f;
             movementEnabled = true;
         }
-        
-        
+        for (size_t i = 0; i < allObjects.size(); i++){
+            if(CheckCollisionPointRec(allObjects[i].objectPos, (Rectangle){player.x, player.y, playerSize, playerSize})){
+                allObjects[i].isFound = true;
+                allObjects[i].color = GREEN;
+
+                std::cout << allObjects[i].color.r << " " << allObjects[i].color.g << std::endl;
+            }
+        }
+
+        for (size_t i = 0; i < allObjects.size(); i++){
+            if(allObjects[i].isFound == true){
+                victoryCounter++;
+            }
+        }
         
         
         if(!(player.x - defaultOffset.x <= EDGE_X[0] || player.x + defaultOffset.x >= EDGE_X[1])){
@@ -273,17 +294,25 @@ int main(){
             // camera_view.offset.y = defaultOffset.y;
         }
         */
-        
+
         // Draw Step
         BeginDrawing();
         BeginMode2D(camera_view);
 
         ClearBackground(BLACK);
         DrawTexture(texture, 0, 0, WHITE);
-        DrawRectangleLines((camera_view.target.x) - cameraWindowDimensions.x/2, (camera_view.target.y) - cameraWindowDimensions.y/2, cameraWindowDimensions.x, cameraWindowDimensions.y, RED);
-        DrawRectangle(EDGE_X[0], EDGE_X[1], EDGE_Y[0], EDGE_Y[1], BLUE);
+        DrawRectangleLines((camera_view.target.x) - cameraWindowDimensions.x/2 , (camera_view.target.y) - cameraWindowDimensions.y/2, cameraWindowDimensions.x, cameraWindowDimensions.y, RED);
+        DrawText(object1.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150, fontSize, object1.color);
+        DrawText(object2.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + fontSize+1, fontSize, object2.color);
+        DrawText(object3.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 2), fontSize, object3.color);
+        DrawText(object4.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 3), fontSize, object4.color);
+        DrawText(object5.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 4), fontSize, object5.color);
         DrawRectangle(player.x, player.y, playerSize, playerSize, PINK);
         
+        if(victoryCounter == allObjects.size()){
+            DrawText("YOU WIN!",(camera_view.target.x) - cameraWindowDimensions.x/2 , (camera_view.target.y) - cameraWindowDimensions.y/2, 40, BLUE);
+        }
+
         EndMode2D();
         EndDrawing();
     }

@@ -17,7 +17,7 @@ struct object{ // @Christian this is what I'm using to store object name and pos
     std::string objectName;
     Vector2 objectPos;
     bool isFound = false;
-    Color color;
+    Color color = RED;
 };
 
 void movement(int up, int down, int right, int left, float speed, Vector2& circle){
@@ -232,8 +232,6 @@ int main(){
             if(CheckCollisionPointRec(allObjects[i].objectPos, (Rectangle){player.x, player.y, playerSize, playerSize})){
                 allObjects[i].isFound = true;
                 allObjects[i].color = GREEN;
-
-                std::cout << allObjects[i].color.r << " " << allObjects[i].color.g << std::endl;
             }
         }
 
@@ -302,11 +300,11 @@ int main(){
         ClearBackground(BLACK);
         DrawTexture(texture, 0, 0, WHITE);
         DrawRectangleLines((camera_view.target.x) - cameraWindowDimensions.x/2 , (camera_view.target.y) - cameraWindowDimensions.y/2, cameraWindowDimensions.x, cameraWindowDimensions.y, RED);
-        DrawText(object1.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150, fontSize, object1.color);
-        DrawText(object2.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + fontSize+1, fontSize, object2.color);
-        DrawText(object3.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 2), fontSize, object3.color);
-        DrawText(object4.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 3), fontSize, object4.color);
-        DrawText(object5.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 4), fontSize, object5.color);
+        DrawText(object1.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150, fontSize, allObjects[0].color);
+        DrawText(object2.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + fontSize+1, fontSize, allObjects[1].color);
+        DrawText(object3.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 2), fontSize, allObjects[2].color);
+        DrawText(object4.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 3), fontSize, allObjects[3].color);
+        DrawText(object5.objectName.c_str(), camera_view.target.x - cameraWindowDimensions.x/2 - 200, (camera_view.target.y) - (cameraWindowDimensions.y/2) - 150 + ((fontSize+1) * 4), fontSize, allObjects[4].color);
         DrawRectangle(player.x, player.y, playerSize, playerSize, PINK);
         
         if(victoryCounter == allObjects.size()){
